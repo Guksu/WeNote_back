@@ -1,11 +1,11 @@
 /**메인파일 */
-import express, { Express, Request, Response } from "express";
+import express, { Express } from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import multer from "multer";
 import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
+import accountRouter from "./routers/account";
 
 dotenv.config();
 
@@ -20,9 +20,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("express 실행 확인");
-});
+app.use("/account", accountRouter);
 
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at http://localhost:${PORT}`);

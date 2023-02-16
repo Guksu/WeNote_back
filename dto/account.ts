@@ -6,3 +6,8 @@ export interface JoinDto {
   MEM_PW: string;
   MEM_IMG: FileList | null;
 }
+
+export interface LoginDto {
+  MEM_EMAIL: string;
+  MEM_PW: string;
+}

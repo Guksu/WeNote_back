@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
+import jwtMiddleware from "./middleware/jwt";
 import accountRouter from "./routers/account";
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/account", accountRouter);
+app.use(jwtMiddleware);
 
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at http://localhost:${PORT}`);

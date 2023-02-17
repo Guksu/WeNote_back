@@ -81,7 +81,7 @@ router.patch("/login", (req: Request, res: Response) => {
       const accessToken = jwt.sign({ MEM_ID: result[0].MEM_ID }, key, {
         expiresIn: "15m",
       });
-      const refreshToken = jwt.sign({ MEM_ID: result[0].MEM_EMAIL }, key, {
+      const refreshToken = jwt.sign({}, key, {
         expiresIn: "2h",
       });
 
@@ -112,29 +112,25 @@ router.patch("/login", (req: Request, res: Response) => {
 router.patch("/logout", (req: Request, res: Response) => {
   if (req.headers.authorization) {
     const token = req.headers.authorization.split("Bearer ")[1];
-    jwt.verify(token, key, (error: any, result: any) => {
-      if (error) {
-        res.status(400).send({
-          status: 400,
-          message: "토큰 인증 오류",
-        });
-      } else {
-        db.query(
-          `UPDATE tb_member SET MEM_REFRESH_TOKEN = ? WHERE MEM_ID = ?`,
-          ["", result.MEM_ID],
-          (error) => {
-            if (error) {
-              console.log(error);
-              res.status(500).send(error);
-            } else {
-              res.status(200).send({
-                status: 200,
-                message: "OK",
-              });
-            }
-          }
-        );
+    db.query(
+      `UPDATE tb_member SET MEM_REFRESH_TOKEN = ? WHERE MEM_REFRESH_TOKEN = ?`,
+      ["", token],
+      (error) => {
+        if (error) {
+          console.log(error);
+          res.status(500).send(error);
+        } else {
+          res.status(200).send({
+            status: 200,
+            message: "OK",
+          });
+        }
       }
+    );
+  } else {
+    res.status(400).send({
+      status: 400,
+      message: "토큰 인증 오류",
     });
   }
 });

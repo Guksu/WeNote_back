@@ -19,6 +19,8 @@ import jwtMiddleware from "./middleware/jwt";
 import accountRouter from "./routers/account";
 import profileRouter from "./routers/profile";
 import noteRouter from "./routers/note";
+import projectRouter from "./routers/project";
+import projectNoteRouter from "./routers/project_note";
 
 dotenv.config();
 
@@ -39,6 +41,8 @@ app.use("/account", accountRouter);
 app.use(jwtMiddleware);
 app.use("/profile", profileRouter);
 app.use("/note", noteRouter);
+app.use("/project", projectRouter);
+app.use("/project_note", projectNoteRouter);
 
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at http://localhost:${PORT}`);

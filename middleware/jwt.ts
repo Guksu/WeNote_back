@@ -8,9 +8,10 @@ dotenv.config();
 const key: string = process.env.SECRET_KEY || "";
 
 const jwtMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  if (req.cookies) {
-    const { accessToken, refreshToken }: { accessToken: string; refreshToken: string } =
-      req.cookies;
+  if (req.url.includes("/project/all_list") || req.url === "/account/logout") {
+    next();
+  } else if (req.cookies) {
+    const { accessToken, refreshToken }: { accessToken: string; refreshToken: string } = req.cookies;
 
     jwt.verify(accessToken, key, (error, result: any) => {
       if (error) {
@@ -23,27 +24,23 @@ const jwtMiddleware = (req: Request, res: Response, next: NextFunction) => {
               message: "토큰 만료",
             });
           } else {
-            db.query(
-              `SELECT * FROM tb_member WHERE MEM_REFRESH_TOKEN = ?`,
-              [refreshToken],
-              (error, result: any) => {
-                if (error) {
-                  console.log(error);
-                  res.status(500).send({
-                    status: 500,
-                    message: error,
-                  });
-                } else {
-                  const newAccessToken = jwt.sign({ MEM_ID: result[0].MEM_ID }, key, {
-                    expiresIn: "15m",
-                  });
+            db.query(`SELECT * FROM tb_member WHERE MEM_REFRESH_TOKEN = ?`, [refreshToken], (error, result: any) => {
+              if (error) {
+                console.log(error);
+                res.status(500).send({
+                  status: 500,
+                  message: error,
+                });
+              } else {
+                const newAccessToken = jwt.sign({ MEM_ID: result[0].MEM_ID }, key, {
+                  expiresIn: "15m",
+                });
 
-                  res.cookie("accessToken", newAccessToken, { sameSite: "none", secure: true });
-                  req.memId = +result[0].MEM_ID;
-                  next();
-                }
+                res.cookie("accessToken", newAccessToken, { sameSite: "none", secure: true });
+                req.memId = +result[0].MEM_ID;
+                next();
               }
-            );
+            });
           }
         });
       } else {

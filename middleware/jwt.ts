@@ -18,8 +18,8 @@ const jwtMiddleware = (req: Request, res: Response, next: NextFunction) => {
         jwt.verify(refreshToken, key, (error, result) => {
           if (error) {
             // 리프레시 토큰 만료
-            res.status(400).send({
-              status: 400,
+            res.status(401).send({
+              status: 401,
               message: "토큰 만료",
             });
           } else {
@@ -52,8 +52,8 @@ const jwtMiddleware = (req: Request, res: Response, next: NextFunction) => {
       }
     });
   } else {
-    res.status(400).send({
-      status: 400,
+    res.status(401).send({
+      status: 401,
       message: "토큰 만료",
     });
   }

@@ -1,4 +1,5 @@
 /**메인파일 */
+
 declare global {
   namespace Express {
     interface Request {
@@ -17,6 +18,7 @@ import compression from "compression";
 import jwtMiddleware from "./middleware/jwt";
 import accountRouter from "./routers/account";
 import profileRouter from "./routers/profile";
+import noteRouter from "./routers/note";
 
 dotenv.config();
 
@@ -36,6 +38,7 @@ app.use(compression());
 app.use("/account", accountRouter);
 app.use(jwtMiddleware);
 app.use("/profile", profileRouter);
+app.use("/note", noteRouter);
 
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at http://localhost:${PORT}`);

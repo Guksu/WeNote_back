@@ -7,7 +7,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
-import { JoinDto, LoginDto } from "../dto/account";
+import { MemberDto } from "../dto/dtos";
 
 dotenv.config();
 
@@ -28,7 +28,8 @@ const key: string = process.env.SECRET_KEY || "";
 
 /**-----------------------------routers----------------------------*/
 router.post("/join", upload.single("MEM_IMG"), (req: Request, res: Response) => {
-  const { MEM_EMAIL, MEM_NICK, MEM_PW }: JoinDto = req.body;
+  const { MEM_EMAIL, MEM_NICK, MEM_PW }: Pick<MemberDto, "MEM_EMAIL" | "MEM_NICK" | "MEM_PW"> =
+    req.body;
   const imgPath: string = `uploads/member_img/${req.file?.filename}`;
 
   const nowDate: string = new Date().toISOString().slice(0, 10);
@@ -73,7 +74,7 @@ router.post("/join", upload.single("MEM_IMG"), (req: Request, res: Response) => 
 });
 
 router.patch("/login", (req: Request, res: Response) => {
-  const { MEM_EMAIL, MEM_PW }: LoginDto = req.body;
+  const { MEM_EMAIL, MEM_PW }: Pick<MemberDto, "MEM_EMAIL" | "MEM_PW"> = req.body;
 
   db.query(`SELECT * FROM tb_member WHERE MEM_EMAIL = ?`, [MEM_EMAIL], (error, result: any) => {
     if (error) {
@@ -111,7 +112,7 @@ router.patch("/login", (req: Request, res: Response) => {
         res.cookie("accessToken", accessToken, { sameSite: "none", secure: true });
         res.cookie("refreshToken", refreshToken, { sameSite: "none", secure: true });
         res.status(200).send({
-          status: 400,
+          status: 200,
           message: "로그인 성공",
           data: {
             accessToken,
@@ -119,8 +120,8 @@ router.patch("/login", (req: Request, res: Response) => {
           },
         });
       } else {
-        res.status(400).send({
-          status: 400,
+        res.status(401).send({
+          status: 401,
           message: "아이디 및 비밀번호가 일치하지 않습니다.",
         });
       }
@@ -150,8 +151,8 @@ router.patch("/logout", (req: Request, res: Response) => {
       }
     );
   } else {
-    res.status(400).send({
-      status: 400,
+    res.status(401).send({
+      status: 401,
       message: "토큰 인증 오류",
     });
   }

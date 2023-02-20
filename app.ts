@@ -1,12 +1,22 @@
 /**메인파일 */
+declare global {
+  namespace Express {
+    interface Request {
+      memId?: number;
+    }
+  }
+}
+
 import express, { Express } from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
+import compression from "compression";
 import jwtMiddleware from "./middleware/jwt";
 import accountRouter from "./routers/account";
+import profileRouter from "./routers/profile";
 
 dotenv.config();
 
@@ -20,9 +30,12 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(compression());
 
+// 라우터 및 미들웨어
 app.use("/account", accountRouter);
 app.use(jwtMiddleware);
+app.use("/profile", profileRouter);
 
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at http://localhost:${PORT}`);

@@ -1,5 +1,5 @@
 /**JWT인증 미들웨어 */
-import express, { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { db } from "../db";
@@ -12,7 +12,7 @@ const jwtMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const accessToken = req.headers.authorization.split(" ")[1];
     const refreshToken = req.headers.authorization.split(" ")[2];
 
-    jwt.verify(accessToken, key, (error, result) => {
+    jwt.verify(accessToken, key, (error, result: any) => {
       if (error) {
         // 엑세스 토큰 만료
         jwt.verify(refreshToken, key, (error, result) => {
@@ -36,6 +36,7 @@ const jwtMiddleware = (req: Request, res: Response, next: NextFunction) => {
                   });
 
                   req.headers.authorization = `Bearer ${newAccessToken} ${refreshToken}`;
+                  req.memId = +result[0].MEM_ID;
                   next();
                 }
               }
@@ -43,8 +44,14 @@ const jwtMiddleware = (req: Request, res: Response, next: NextFunction) => {
           }
         });
       } else {
+        req.memId = result.MEM_ID;
         next();
       }
+    });
+  } else {
+    res.status(400).send({
+      status: 400,
+      message: "토큰 만료",
     });
   }
 };

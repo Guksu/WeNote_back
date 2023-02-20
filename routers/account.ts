@@ -108,6 +108,8 @@ router.patch("/login", (req: Request, res: Response) => {
           }
         });
 
+        res.cookie("accessToken", accessToken, { sameSite: "none", secure: true });
+        res.cookie("refreshToken", refreshToken, { sameSite: "none", secure: true });
         res.status(200).send({
           status: 400,
           message: "로그인 성공",

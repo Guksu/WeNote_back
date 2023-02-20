@@ -21,7 +21,7 @@ const upload = multer({
 
 /**-----------------------------routers----------------------------*/
 router.get("/info", (req: Request, res: Response) => {
-  if (req.headers.authorization) {
+  if (req.cookies) {
     db.query("SELECT * FROM tb_member WHERE MEM_ID = ?", [req.memId], (error, result) => {
       if (error) {
         res.status(500).send({
@@ -51,7 +51,7 @@ router.get("/info", (req: Request, res: Response) => {
 });
 
 router.patch("/update", upload.single("MEM_IMG"), (req: Request, res: Response) => {
-  if (req.headers.authorization) {
+  if (req.cookies) {
     db.query("SELECT * FROM tb_member WHERE MEM_ID = ?", [req.memId], (error, result) => {
       if (error) {
         res.status(500).send({
@@ -93,23 +93,30 @@ router.patch("/update", upload.single("MEM_IMG"), (req: Request, res: Response) 
 });
 
 router.patch("/withdrawl_membership", (req: Request, res: Response) => {
-  db.query(
-    "UPDATE tb_member SET MEM_STATE = ? WHERE MEM_ID = ?",
-    ["E", req.memId],
-    (error, result) => {
-      if (error) {
-        res.status(500).send({
-          status: 500,
-          message: error,
-        });
-      } else {
-        res.status(200).send({
-          status: 200,
-          message: "ok",
-        });
+  if (req.cookies) {
+    db.query(
+      "UPDATE tb_member SET MEM_STATE = ? WHERE MEM_ID = ?",
+      ["E", req.memId],
+      (error, result) => {
+        if (error) {
+          res.status(500).send({
+            status: 500,
+            message: error,
+          });
+        } else {
+          res.status(200).send({
+            status: 200,
+            message: "ok",
+          });
+        }
       }
-    }
-  );
+    );
+  } else {
+    res.status(400).send({
+      status: 400,
+      message: "토큰 만료",
+    });
+  }
 });
 
 export default router;

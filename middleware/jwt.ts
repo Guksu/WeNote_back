@@ -8,9 +8,9 @@ dotenv.config();
 const key: string = process.env.SECRET_KEY || "";
 
 const jwtMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  if (req.headers.authorization) {
-    const accessToken = req.headers.authorization.split(" ")[1];
-    const refreshToken = req.headers.authorization.split(" ")[2];
+  if (req.cookies) {
+    const { accessToken, refreshToken }: { accessToken: string; refreshToken: string } =
+      req.cookies;
 
     jwt.verify(accessToken, key, (error, result: any) => {
       if (error) {
@@ -29,13 +29,16 @@ const jwtMiddleware = (req: Request, res: Response, next: NextFunction) => {
               (error, result: any) => {
                 if (error) {
                   console.log(error);
-                  res.status(500).send(error);
+                  res.status(500).send({
+                    status: 500,
+                    message: error,
+                  });
                 } else {
                   const newAccessToken = jwt.sign({ MEM_ID: result[0].MEM_ID }, key, {
                     expiresIn: "15m",
                   });
 
-                  req.headers.authorization = `Bearer ${newAccessToken} ${refreshToken}`;
+                  res.cookie("accessToken", newAccessToken, { sameSite: "none", secure: true });
                   req.memId = +result[0].MEM_ID;
                   next();
                 }

@@ -119,7 +119,7 @@ router.get("/all_list", (req: Request, res: Response) => {
   const pageEnd: number = Number(req.query.PAGE) * 10;
 
   db.query(
-    `SELECT PRO_ID, PRO_CATEGORY, PRO_TITLE, PRO_REG_DT FROM tb_project WHERE PRO_CATEGORY IN (${proCategory}) AND PRO_TITLE LIKE "%${keyword}%" LIMIT ?,?`,
+    `SELECT PRO_ID, PRO_CATEGORY, PRO_CONTENT, PRO_TITLE, PRO_REG_DT FROM tb_project WHERE PRO_CATEGORY IN (${proCategory}) AND PRO_TITLE LIKE "%${keyword}%" LIMIT ?,?`,
     [pageStart, pageEnd],
     (error, result) => {
       if (error) {

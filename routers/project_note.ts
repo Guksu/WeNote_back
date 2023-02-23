@@ -224,8 +224,8 @@ router.get("/comment_list/:id", (req: Request, res: Response) => {
   const projectNoteId = req.params.id;
 
   db.query(
-    "SELECT tb_comment.MEM_ID, MEM_NICK, MEM_IMG, COMMENT_CONTENT, COMMENT_REG_DT FROM tb_comment INNER JOIN tb_member ON tb_member.MEM_ID = tb_comment.MEM_ID WHERE PRO_NOTE_ID = ?",
-    [projectNoteId],
+    "SELECT tb_comment.MEM_ID, MEM_NICK, MEM_IMG, COMMENT_CONTENT, COMMENT_REG_DT FROM tb_comment INNER JOIN tb_member ON tb_member.MEM_ID = tb_comment.MEM_ID WHERE PRO_NOTE_ID = ? AND COMMENT_STATE = ?",
+    [projectNoteId, "N"],
     (error, result) => {
       if (error) {
         res.status(500).send({

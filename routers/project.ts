@@ -105,7 +105,7 @@ router.get("/detail/:id", (req: Request, res: Response) => {
   const projectId = req.params.id;
 
   db.query(
-    "SELECT PRO_CATEGORY, PRO_TITLE, PRO_CONTENT, PRO_REG_DT,PRO_IMG, MEM_IMG, MEM_NICK FROM tb_project_member INNER JOIN tb_project ON tb_project.PRO_ID = ? INNER JOIN tb_member ON tb_project_member.PRO_MEM_ROLE = ?",
+    "SELECT PRO_CATEGORY, PRO_TITLE, PRO_CONTENT, PRO_REG_DT, PRO_IMG FROM tb_project WHERE PRO_ID = ? ",
     [projectId, "R"],
     (error, result) => {
       if (error) {
@@ -114,10 +114,21 @@ router.get("/detail/:id", (req: Request, res: Response) => {
           message: error,
         });
       } else if (result.length > 0) {
-        res.status(200).send({
-          status: 200,
-          message: "ok",
-          data: result[0],
+        db.query("SELECT * FROM tb_project_member WHERE MEM_ID = ? AND PRO_ID = ?", [req.memId, projectId], (error, result2) => {
+          if (error) {
+            res.status(500).send({
+              status: 500,
+              message: error,
+            });
+          } else {
+            const memberCheck = result2.length > 0 ? "Y" : "N";
+
+            res.status(200).send({
+              status: 200,
+              message: "ok",
+              data: { ...result[0], MEMBER_CHECK: memberCheck },
+            });
+          }
         });
       } else {
         res.status(404).send({

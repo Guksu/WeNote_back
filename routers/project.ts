@@ -137,7 +137,7 @@ router.get("/all_list", (req: Request, res: Response) => {
 
   db.query(
     `SELECT PRO_ID, PRO_CATEGORY, PRO_CONTENT, PRO_TITLE, PRO_REG_DT , PRO_IMG FROM tb_project WHERE PRO_STATE = ? AND PRO_CATEGORY IN (${proCategory}) AND PRO_TITLE LIKE "%${keyword}%" LIMIT ?,?`,
-    [pageStart, pageEnd, "W"],
+    ["W", pageStart, pageEnd],
     (error, result) => {
       if (error) {
         res.status(500).send({

@@ -2,17 +2,32 @@
 import express, { Request, Response } from "express";
 import { db } from "../db";
 import { ProjectDto } from "../dto/dtos";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
 /**----------------------------variables---------------------------*/
 const router = express.Router();
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "uploads/project_img");
+    },
+    filename: function (req, file, cb) {
+      const ext = path.extname(file.originalname);
+      cb(null, path.basename(file.originalname, ext) + "-" + Date.now() + ext);
+    },
+  }),
+});
 
-router.post("/create", (req: Request, res: Response) => {
+router.post("/create", upload.single("PRO_IMG"), (req: Request, res: Response) => {
   const { PRO_CATEGORY, PRO_TITLE, PRO_CONTENT }: Pick<ProjectDto, "PRO_CATEGORY" | "PRO_CONTENT" | "PRO_TITLE"> = req.body;
   const nowDate: string = new Date().toISOString().slice(0, 10);
+  const imgPath: string = req.file ? `uploads/project_img/${req.file?.filename}` : "";
 
   db.query(
-    "INSERT INTO tb_project (PRO_CATEGORY, PRO_TITLE, PRO_CONTENT, PRO_REG_DT) VALUES (?, ?, ?, ?)",
-    [PRO_CATEGORY, PRO_TITLE, PRO_CONTENT, nowDate],
+    "INSERT INTO tb_project (PRO_CATEGORY, PRO_TITLE, PRO_CONTENT, PRO_REG_DT, PRO_IMG) VALUES (?, ?, ?, ?,?)",
+    [PRO_CATEGORY, PRO_TITLE, PRO_CONTENT, nowDate, imgPath],
     (error, result) => {
       if (error) {
         res.status(500).send({
@@ -42,7 +57,7 @@ router.post("/create", (req: Request, res: Response) => {
   );
 });
 
-router.patch("/update/:id", (req: Request, res: Response) => {
+router.patch("/update/:id", upload.single("PRO_IMG"), (req: Request, res: Response) => {
   const projectId = req.params.id;
 
   db.query("SELECT * FROM tb_project WHERE PRO_ID = ?", [projectId], (error, result) => {
@@ -57,10 +72,11 @@ router.patch("/update/:id", (req: Request, res: Response) => {
       const proContent: string = req.body.PRO_CONTENT ? req.body.PRO_CONTENT : result[0].PRO_CONTENT;
       const proState: string = req.body.PRO_STATE ? req.body.PRO_STATE : result[0].PRO_STATE;
       const nowDate: string = new Date().toISOString().slice(0, 10);
+      const imgPath: string = req.file ? `uploads/project_img/${req.file?.filename}` : result[0].PRO_IMG || "";
 
       db.query(
-        "UPDATE tb_project SET PRO_CATEGORY = ?, PRO_TITLE = ?, PRO_CONTENT = ?, PRO_STATE =?, PRO_UPDATE_DT =?",
-        [proCategory, proTitle, proContent, proState, nowDate],
+        "UPDATE tb_project SET PRO_CATEGORY = ?, PRO_TITLE = ?, PRO_CONTENT = ?, PRO_STATE =?, PRO_UPDATE_DT =?, PRO_IMG = ?",
+        [proCategory, proTitle, proContent, proState, nowDate, imgPath],
         (error, result2) => {
           if (error) {
             res.status(500).send({
@@ -68,6 +84,7 @@ router.patch("/update/:id", (req: Request, res: Response) => {
               message: error,
             });
           } else {
+            req.file && result[0].PRO_IMG !== "" && fs.unlinkSync(result[0].PRO_IMG);
             res.status(200).send({
               status: 200,
               message: "ok",
@@ -88,7 +105,7 @@ router.get("/detail/:id", (req: Request, res: Response) => {
   const projectId = req.params.id;
 
   db.query(
-    "SELECT PRO_CATEGORY, PRO_TITLE, PRO_CONTENT, PRO_REG_DT, MEM_IMG, MEM_NICK FROM tb_project_member INNER JOIN tb_project ON tb_project.PRO_ID = ? INNER JOIN tb_member ON tb_project_member.PRO_MEM_ROLE = ?",
+    "SELECT PRO_CATEGORY, PRO_TITLE, PRO_CONTENT, PRO_REG_DT,PRO_IMG, MEM_IMG, MEM_NICK FROM tb_project_member INNER JOIN tb_project ON tb_project.PRO_ID = ? INNER JOIN tb_member ON tb_project_member.PRO_MEM_ROLE = ?",
     [projectId, "R"],
     (error, result) => {
       if (error) {
@@ -119,8 +136,8 @@ router.get("/all_list", (req: Request, res: Response) => {
   const pageEnd: number = Number(req.query.PAGE) * 10;
 
   db.query(
-    `SELECT PRO_ID, PRO_CATEGORY, PRO_CONTENT, PRO_TITLE, PRO_REG_DT FROM tb_project WHERE PRO_CATEGORY IN (${proCategory}) AND PRO_TITLE LIKE "%${keyword}%" LIMIT ?,?`,
-    [pageStart, pageEnd],
+    `SELECT PRO_ID, PRO_CATEGORY, PRO_CONTENT, PRO_TITLE, PRO_REG_DT , PRO_IMG FROM tb_project WHERE PRO_STATE = ? AND PRO_CATEGORY IN (${proCategory}) AND PRO_TITLE LIKE "%${keyword}%" LIMIT ?,?`,
+    [pageStart, pageEnd, "W"],
     (error, result) => {
       if (error) {
         res.status(500).send({

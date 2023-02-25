@@ -112,6 +112,7 @@ router.patch("/login", (req: Request, res: Response) => {
           data: {
             accessToken,
             refreshToken,
+            MEM_IMG: result[0].MEM_IMG,
           },
         });
       } else {

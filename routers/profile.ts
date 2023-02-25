@@ -21,7 +21,7 @@ const upload = multer({
 
 /**-----------------------------routers----------------------------*/
 router.get("/info", (req: Request, res: Response) => {
-  db.query("SELECT * FROM tb_member WHERE MEM_ID = ?", [req.memId], (error, result) => {
+  db.query("SELECT* FROM tb_member WHERE MEM_ID = ?", [req.memId], (error, result) => {
     if (error) {
       res.status(500).send({
         status: 500,
@@ -33,7 +33,8 @@ router.get("/info", (req: Request, res: Response) => {
       const MEM_IMG = result[0].MEM_IMG || "";
       res.status(200).send({
         status: 200,
-        message: {
+        message: "ok",
+        data: {
           MEM_NICK,
           MEM_EMAIL,
           MEM_IMG,
@@ -69,6 +70,7 @@ router.patch("/update", upload.single("MEM_IMG"), (req: Request, res: Response) 
             res.status(200).send({
               status: 200,
               message: "ok",
+              data: { MEM_IMG: imgPath },
             });
           }
         }

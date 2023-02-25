@@ -114,22 +114,26 @@ router.get("/detail/:id", (req: Request, res: Response) => {
           message: error,
         });
       } else if (result.length > 0) {
-        db.query("SELECT * FROM tb_project_member WHERE MEM_ID = ? AND PRO_ID = ?", [req.memId, projectId], (error, result2) => {
-          if (error) {
-            res.status(500).send({
-              status: 500,
-              message: error,
-            });
-          } else {
-            const memberCheck = result2.length > 0 ? "Y" : "N";
+        db.query(
+          "SELECT * FROM tb_project_member WHERE MEM_ID = ? AND PRO_ID = ? AND NOT PRO_MEM_ROLE = ?",
+          [req.memId, projectId, "R"],
+          (error, result2) => {
+            if (error) {
+              res.status(500).send({
+                status: 500,
+                message: error,
+              });
+            } else {
+              const memberCheck = result2.length > 0 ? "Y" : "N";
 
-            res.status(200).send({
-              status: 200,
-              message: "ok",
-              data: { ...result[0], MEMBER_CHECK: memberCheck },
-            });
+              res.status(200).send({
+                status: 200,
+                message: "ok",
+                data: { ...result[0], MEMBER_CHECK: memberCheck },
+              });
+            }
           }
-        });
+        );
       } else {
         res.status(404).send({
           status: 404,

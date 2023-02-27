@@ -116,8 +116,8 @@ router.patch("/login", (req: Request, res: Response) => {
           },
         });
       } else {
-        res.status(401).send({
-          status: 401,
+        res.status(402).send({
+          status: 402,
           message: "아이디 및 비밀번호가 일치하지 않습니다.",
         });
       }

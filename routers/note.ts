@@ -46,20 +46,24 @@ router.post("/create", upload.single("NOTE_IMG"), (req: Request, res: Response) 
 });
 
 router.get("/all_list", (req: Request, res: Response) => {
-  db.query("SELECT NOTE_ID, NOTE_TITLE, NOTE_STATE FROM tb_note WHERE MEM_ID = ?", [req.memId], (error, result) => {
-    if (error) {
-      res.status(500).send({
-        status: 500,
-        message: error,
-      });
-    } else {
-      res.status(200).send({
-        status: 200,
-        message: "ok",
-        data: result,
-      });
+  db.query(
+    "SELECT NOTE_ID, NOTE_TITLE, NOTE_STATE,NOTE_REG_DT,NOTE_CONTENT FROM tb_note WHERE MEM_ID = ? AND NOT NOTE_STATE = ?",
+    [req.memId, "D"],
+    (error, result) => {
+      if (error) {
+        res.status(500).send({
+          status: 500,
+          message: error,
+        });
+      } else {
+        res.status(200).send({
+          status: 200,
+          message: "ok",
+          data: result,
+        });
+      }
     }
-  });
+  );
 });
 
 router.get("/detail/:id", (req: Request, res: Response) => {
@@ -132,7 +136,7 @@ router.patch("/state_change/:id", (req: Request, res: Response) => {
   const noteId = req.params.id;
   const noteState: string = req.body.NOTE_STATE;
 
-  db.query("UPDATE tb_note SET NOTE_STATE = ? WHERE NOTE_ID = ?", [noteId, noteState], (error, result) => {
+  db.query("UPDATE tb_note SET NOTE_STATE = ? WHERE NOTE_ID = ?", [noteState, noteId], (error, result) => {
     if (error) {
       res.status(500).send({
         status: 500,

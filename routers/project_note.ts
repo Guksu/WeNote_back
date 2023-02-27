@@ -50,8 +50,8 @@ router.get("/all_list/:id", (req: Request, res: Response) => {
   const projectId = req.params.id;
 
   db.query(
-    "SELECT PRO_NOTE_ID, PRO_NOTE_TITLE, PRO_NOTE_STATE, PRO_NOTE_REG_DT, MEM_NICK,MEM_IMG FROM tb_project_note INNER JOIN tb_member ON tb_member.MEM_ID = tb_project_note.MEM_ID  WHERE PRO_ID = ?",
-    [projectId],
+    "SELECT PRO_NOTE_ID, PRO_NOTE_TITLE, PRO_NOTE_STATE,PRO_NOTE_CONTENT, PRO_NOTE_REG_DT, MEM_NICK,MEM_IMG FROM tb_project_note INNER JOIN tb_member ON tb_member.MEM_ID = tb_project_note.MEM_ID  WHERE PRO_ID = ? AND NOT PRO_NOTE_STATE = ?",
+    [projectId, "D"],
     (error, result) => {
       if (error) {
         res.status(500).send({
@@ -85,7 +85,7 @@ router.get("/detail/:id", (req: Request, res: Response) => {
         res.status(200).send({
           status: 200,
           message: "ok",
-          data: result[0],
+          data: [result[0], { writerCheck: req.memId === result[0].MEM_ID ? "true" : "false" }],
         });
       } else {
         res.status(404).send({

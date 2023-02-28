@@ -169,7 +169,7 @@ router.get("/all_list", (req: Request, res: Response) => {
 router.post("/participation", (req: Request, res: Response) => {
   const proId: string = req.body.PRO_ID;
 
-  db.query("INSERT INTO tb_project_member (MEM_ID, PRO_ID, PRO_MEM_ROLE) VALUES (?, ?, ?)", [req.memId, +proId, "W"], (error, result) => {
+  db.query("INSERT INTO tb_project_member (MEM_ID, PRO_ID, PRO_MEM_ROLE) VALUES (?, ?, ?)", [req.memId, +proId, "M"], (error, result) => {
     if (error) {
       res.status(500).send({
         status: 500,

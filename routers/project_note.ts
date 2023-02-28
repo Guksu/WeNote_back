@@ -50,19 +50,31 @@ router.get("/all_list/:id", (req: Request, res: Response) => {
   const projectId = req.params.id;
 
   db.query(
-    "SELECT PRO_NOTE_ID, PRO_NOTE_TITLE, PRO_NOTE_STATE,PRO_NOTE_CONTENT, PRO_NOTE_REG_DT, MEM_NICK,MEM_IMG FROM tb_project_note INNER JOIN tb_member ON tb_member.MEM_ID = tb_project_note.MEM_ID  WHERE PRO_ID = ? AND NOT PRO_NOTE_STATE = ?",
+    "SELECT tb_project_note.MEM_ID, PRO_NOTE_ID, PRO_NOTE_TITLE, PRO_NOTE_STATE,PRO_NOTE_CONTENT, PRO_NOTE_REG_DT, MEM_NICK,MEM_IMG FROM tb_project_note INNER JOIN tb_member ON tb_member.MEM_ID = tb_project_note.MEM_ID  WHERE PRO_ID = ? AND NOT PRO_NOTE_STATE = ?",
     [projectId, "D"],
-    (error, result) => {
+    async (error, result) => {
       if (error) {
         res.status(500).send({
           status: 500,
           message: error,
         });
       } else {
+        let editData = result;
+        function edit() {
+          for (let i = 0; i < editData.length; i++) {
+            if (editData[i].MEM_ID === req.memId) {
+              editData[i].ISOWNER = "Y";
+            } else {
+              editData[i].ISOWNER = "N";
+            }
+          }
+        }
+        await edit();
+
         res.status(200).send({
           status: 200,
           message: "ok",
-          data: result,
+          data: editData,
         });
       }
     }
@@ -85,7 +97,7 @@ router.get("/detail/:id", (req: Request, res: Response) => {
         res.status(200).send({
           status: 200,
           message: "ok",
-          data: [result[0], { writerCheck: req.memId === result[0].MEM_ID ? "true" : "false" }],
+          data: [result[0], { ISOWNER: req.memId === result[0].MEM_ID ? "Y" : "N" }],
         });
       } else {
         res.status(404).send({

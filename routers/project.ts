@@ -75,8 +75,8 @@ router.patch("/update/:id", upload.single("PRO_IMG"), (req: Request, res: Respon
       const imgPath: string = req.file ? `uploads/project_img/${req.file?.filename}` : result[0].PRO_IMG || "";
 
       db.query(
-        "UPDATE tb_project SET PRO_CATEGORY = ?, PRO_TITLE = ?, PRO_CONTENT = ?, PRO_STATE =?, PRO_UPDATE_DT =?, PRO_IMG = ?",
-        [proCategory, proTitle, proContent, proState, nowDate, imgPath],
+        "UPDATE tb_project SET PRO_CATEGORY = ?, PRO_TITLE = ?, PRO_CONTENT = ?, PRO_STATE =?, PRO_UPDATE_DT =?, PRO_IMG = ? WHERE PRO_ID = ?",
+        [proCategory, proTitle, proContent, proState, nowDate, imgPath, projectId],
         (error, result2) => {
           if (error) {
             res.status(500).send({
@@ -105,7 +105,7 @@ router.get("/detail/:id", (req: Request, res: Response) => {
   const projectId = req.params.id;
 
   db.query(
-    "SELECT PRO_CATEGORY, PRO_TITLE, PRO_CONTENT, PRO_REG_DT, PRO_IMG FROM tb_project WHERE PRO_ID = ? ",
+    "SELECT PRO_CATEGORY, PRO_TITLE, PRO_CONTENT, PRO_REG_DT,PRO_STATE, PRO_IMG FROM tb_project WHERE PRO_ID = ? ",
     [projectId, "R"],
     (error, result) => {
       if (error) {
@@ -114,26 +114,22 @@ router.get("/detail/:id", (req: Request, res: Response) => {
           message: error,
         });
       } else if (result.length > 0) {
-        db.query(
-          "SELECT * FROM tb_project_member WHERE MEM_ID = ? AND PRO_ID = ? AND NOT PRO_MEM_ROLE = ?",
-          [req.memId, projectId, "R"],
-          (error, result2) => {
-            if (error) {
-              res.status(500).send({
-                status: 500,
-                message: error,
-              });
-            } else {
-              const memberCheck = result2.length > 0 ? "Y" : "N";
+        db.query("SELECT * FROM tb_project_member WHERE MEM_ID = ? AND PRO_ID = ? ", [req.memId, projectId], (error, result2) => {
+          if (error) {
+            res.status(500).send({
+              status: 500,
+              message: error,
+            });
+          } else {
+            const memberCheck = result2.length > 0 ? "Y" : "N";
 
-              res.status(200).send({
-                status: 200,
-                message: "ok",
-                data: { ...result[0], MEMBER_CHECK: memberCheck },
-              });
-            }
+            res.status(200).send({
+              status: 200,
+              message: "ok",
+              data: { ...result[0], MEMBER_CHECK: memberCheck },
+            });
           }
-        );
+        });
       } else {
         res.status(404).send({
           status: 404,
@@ -293,7 +289,7 @@ router.get("/project_member_list/:id", (req: Request, res: Response) => {
 
 router.get("/all_project_list", (req: Request, res: Response) => {
   db.query(
-    "SELECT PRO_ID, PRO_TITLE, PRO_REG_DT, PRO_CATEGORY FROM tb_project WHERE PRO_ID IN (SELECT PRO_ID FROM tb_project_member WHERE MEM_ID = ? AND PRO_MEM_ROLE = ?)",
+    "SELECT PRO_ID, PRO_TITLE,PRO_CONTENT, PRO_REG_DT, PRO_CATEGORY,PRO_IMG,PRO_STATE FROM tb_project WHERE PRO_ID IN (SELECT PRO_ID FROM tb_project_member WHERE MEM_ID = ? AND PRO_MEM_ROLE = ?)",
     [req.memId, "M"],
     (error, result) => {
       if (error) {
@@ -314,7 +310,7 @@ router.get("/all_project_list", (req: Request, res: Response) => {
 
 router.get("/my_project_list", (req: Request, res: Response) => {
   db.query(
-    "SELECT PRO_ID, PRO_TITLE, PRO_REG_DT, PRO_CATEGORY FROM tb_project WHERE PRO_ID IN (SELECT PRO_ID FROM tb_project_member WHERE MEM_ID = ? AND PRO_MEM_ROLE = ?)",
+    "SELECT PRO_ID, PRO_TITLE,PRO_CONTENT, PRO_REG_DT, PRO_CATEGORY,PRO_IMG,PRO_STATE FROM tb_project WHERE PRO_ID IN (SELECT PRO_ID FROM tb_project_member WHERE MEM_ID = ? AND PRO_MEM_ROLE = ?)",
     [req.memId, "R"],
     (error, result) => {
       if (error) {

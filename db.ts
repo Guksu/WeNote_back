@@ -4,8 +4,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const db = mysql.createConnection({
-  user: "root",
-  host: "localhost",
+  user: "wenote-user",
+  host: "srv-captain--zpjnuiysrk-mysql-80x",
   password: process.env.DB_PASSWORD,
-  database: "wenote",
+  database: "wenote-database",
 });

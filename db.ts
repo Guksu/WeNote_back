@@ -6,7 +6,7 @@ dotenv.config();
 export const db = mysql.createConnection({
   user: "wenote-user",
   host: "srv-captain--zpjnuiysrk-mysql-80x",
-  password: process.env.DB_PASSWORD,
+  password: "dGNLl9wOjpC4",
   database: "wenote-database",
   port: 3306,
 });

@@ -25,7 +25,7 @@ import projectNoteRouter from "./routers/project_note";
 dotenv.config();
 
 const app: Express = express();
-const PORT: number = 4000;
+const PORT: number = 8080;
 
 app.use(helmet());
 // app.use(cors());

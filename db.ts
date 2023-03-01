@@ -8,4 +8,5 @@ export const db = mysql.createConnection({
   host: "srv-captain--zpjnuiysrk-mysql-80x",
   password: process.env.DB_PASSWORD,
   database: "wenote-database",
+  port: 3306,
 });

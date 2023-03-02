@@ -16,6 +16,7 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import jwtMiddleware from "./middleware/jwt";
+import deploy_memIdMiddleWare from "./middleware/deploy_memId";
 import accountRouter from "./routers/account";
 import profileRouter from "./routers/profile";
 import noteRouter from "./routers/note";
@@ -47,6 +48,7 @@ app.use("/uploads", express.static("uploads"));
 // 라우터 및 미들웨어
 app.use("/account", accountRouter);
 // app.use(jwtMiddleware);
+app.use(deploy_memIdMiddleWare);
 app.use("/profile", profileRouter);
 app.use("/note", noteRouter);
 app.use("/project", projectRouter);

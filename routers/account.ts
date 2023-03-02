@@ -105,7 +105,6 @@ router.patch("/login", (req: Request, res: Response) => {
         });
         res.cookie("accessToken", accessToken, { sameSite: "none", secure: true });
         res.cookie("refreshToken", refreshToken, { sameSite: "none", secure: true });
-        req.memId = result[0].MEM_ID;
         res.status(200).send({
           status: 200,
           message: "로그인 성공",
@@ -113,6 +112,7 @@ router.patch("/login", (req: Request, res: Response) => {
             accessToken,
             refreshToken,
             MEM_IMG: result[0].MEM_IMG,
+            MEM_ID: result[0].MEM_ID,
           },
         });
       } else {

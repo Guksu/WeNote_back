@@ -37,8 +37,8 @@ app.use(
   })
 );
 
-app.use(morgan("dev"));
-// app.use(morgan("combined"));   배포시 combined로 더 정확한 정보를 가져오기 위해 사용
+// app.use(morgan("dev"));
+app.use(morgan("combined"));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

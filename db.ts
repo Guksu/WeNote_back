@@ -6,7 +6,7 @@ dotenv.config();
 export const db = mysql.createConnection({
   user: "root",
   host: "svc.sel3.cloudtype.app",
-  password: process.env.DB_PASSWORD,
+  password: "fire0704!!",
   database: "wenote",
   port: 32317,
 });

@@ -27,7 +27,6 @@ dotenv.config();
 const app: Express = express();
 const PORT: number = 8080;
 
-app.set("trust proxy", 1);
 app.use(helmet());
 // app.use(cors());
 app.use(

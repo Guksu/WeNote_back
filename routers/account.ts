@@ -103,7 +103,6 @@ router.patch("/login", (req: Request, res: Response) => {
             });
           }
         });
-
         res.cookie("accessToken", accessToken, { sameSite: "none", secure: true, domain: "https://we-note-front.vercel.app/" });
         res.cookie("refreshToken", refreshToken, { sameSite: "none", secure: true, domain: "https://we-note-front.vercel.app/" });
         res.status(200).send({

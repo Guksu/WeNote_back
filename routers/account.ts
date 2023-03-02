@@ -104,8 +104,8 @@ router.patch("/login", (req: Request, res: Response) => {
           }
         });
 
-        res.cookie("accessToken", accessToken, { sameSite: "none", secure: true });
-        res.cookie("refreshToken", refreshToken, { sameSite: "none", secure: true });
+        res.cookie("accessToken", accessToken, { sameSite: "none", secure: true, domain: "https://we-note-front.vercel.app/" });
+        res.cookie("refreshToken", refreshToken, { sameSite: "none", secure: true, domain: "https://we-note-front.vercel.app/" });
         res.status(200).send({
           status: 200,
           message: "로그인 성공",
@@ -136,8 +136,8 @@ router.patch("/logout", (req: Request, res: Response) => {
           message: error,
         });
       } else {
-        res.cookie("accessToken", "", { sameSite: "none", secure: true });
-        res.cookie("refreshToken", "", { sameSite: "none", secure: true });
+        res.cookie("accessToken", "", { sameSite: "none", secure: true, domain: "https://we-note-front.vercel.app/" });
+        res.cookie("refreshToken", "", { sameSite: "none", secure: true, domain: "https://we-note-front.vercel.app/" });
         res.status(200).send({
           status: 200,
           message: "OK",

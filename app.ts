@@ -48,7 +48,7 @@ app.use("/uploads", express.static("uploads"));
 // 라우터 및 미들웨어
 app.use("/account", accountRouter);
 // app.use(jwtMiddleware);
-// app.use(deploy_memIdMiddleWare);
+app.use(deploy_memIdMiddleWare);
 app.use("/profile", profileRouter);
 app.use("/note", noteRouter);
 app.use("/project", projectRouter);

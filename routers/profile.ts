@@ -45,7 +45,7 @@ router.get("/info", (req: Request, res: Response) => {
 });
 
 router.patch("/update", upload.single("MEM_IMG"), (req: Request, res: Response) => {
-  db.query("SELECT * FROM tb_member WHERE MEM_ID = ?", [req.query.memId], (error, result) => {
+  db.query("SELECT * FROM tb_member WHERE MEM_ID = ?", [req.memId], (error, result) => {
     if (error) {
       res.status(500).send({
         status: 500,
@@ -58,7 +58,7 @@ router.patch("/update", upload.single("MEM_IMG"), (req: Request, res: Response) 
 
       db.query(
         "UPDATE tb_member SET MEM_NICK = ? , MEM_IMG = ? , MEM_UPDATE_DT = ? WHERE MEM_ID = ?",
-        [memNick, imgPath, nowDate, req.query.memId],
+        [memNick, imgPath, nowDate, req.memId],
         (error, result2) => {
           if (error) {
             res.status(500).send({

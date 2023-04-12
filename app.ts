@@ -43,7 +43,8 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(compression());
-app.use("/uploads", express.static("uploads"));
+// app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(__dirname + "/uploads"));
 
 // 라우터 및 미들웨어
 app.use("/account", accountRouter);

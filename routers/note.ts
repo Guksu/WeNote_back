@@ -11,7 +11,7 @@ const router = express.Router();
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, "app/dist/uploads/note_img");
+      cb(null, "dist/uploads/note_img");
     },
     filename: function (req, file, cb) {
       const ext = path.extname(file.originalname);
